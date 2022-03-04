@@ -1,38 +1,91 @@
-.App {
-  text-align: center;
-}
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+@font-face {
+  font-family: 'GothamMeduim';
+  src: url('assets/Gotham-Bold.otf');
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+@media only screen and (min-width: 768px) {
+  #back {
+      background-image: url("assets/BG\ drk.png");
+      min-height: 100vh;
+      background-size: cover;
+      background-repeat: repeat;
+  
+  
+  }
+  #logo{
+      padding-left: 4vw;
+  }
+  #logo > img{
+      max-height: 100%;
+      max-width: 400px;
   }
 }
 
-.App-header {
-  background-color: #282c34;
+@media only screen and (max-width: 768px) {
+  #back {
+      background-image: url("assets/BG\ drk.png");
+      min-height: 100vh;
+      background-size: cover;
+      background-repeat: repeat;
+  
+  }
+  #logo{
+      height: 100vh;
+  }
+  #logo > img{
+      vertical-align: middle;
+      max-height: 100%;
+      max-width: 400px;
+      width: auto;
+      height: auto;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+  }
+
+  #sub{
+      bottom: 0;
+  }
+}
+.go{
+  font-family: GothamMeduim;
+}
+
+
+
+
+#cc {
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+} 
+
+#main {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+#im {
+  width: 100%;
 }
+#fb{
+  height: 24px;
+  width: auto;
+  float: left;
+  vertical-align: middle;
+}
+.form-label{
+  font-weight: bold;
+  font-size: 1.25em;
+}
+.b {
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  width: 100%;
+  height: 3px;
+  left: 843px;
+  top: 739px;
+  border-radius: 5px;
+
+  background: #000000;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
