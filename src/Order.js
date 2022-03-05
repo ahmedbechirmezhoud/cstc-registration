@@ -12,7 +12,7 @@ export default function Order({ handleError, onSubmit, available }) {
   const [ roomType, setRoomType ] = useState(null);
   const [roomMates, setRoomMates] = useState([]);
   const [ payementMethod, setPayementMethod ] = useState(null); 
-  const { handleSubmit, setValue, getValues } = useFormContext(); 
+  const { handleSubmit, setValue, getValues, formState } = useFormContext(); 
 
 
   useEffect(() => {
@@ -92,13 +92,13 @@ export default function Order({ handleError, onSubmit, available }) {
                 <p><span style={{ fontWeight: "500" }}>Name:</span > Adam Dey <br/> <span style={{ fontWeight: "500" }}>phone:</span > 58881714 </p>
                 <p></p>
                 <div className="d-grid gap-2 mt-5" id="sub">
-                    <button type="submit" className="btn btn-dark go">Order Now</button>
+                    <button type="submit" disabled={formState.isSubmitted} className="btn btn-dark go">Order Now</button>
                 </div>
             </form>        
         </div>
     </div>
     <div className="col"></div>
-    <div className="col-md-5 m-xl-3" id="logo">
+    <div className="col-md-5 m-xl-3" id="illus">
         <img className="img-fluid " src={illustration} alt="" />
     </div>
     </>

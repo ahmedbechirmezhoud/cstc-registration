@@ -16,6 +16,8 @@ import Order from './Order';
 
 export default function App(){
 
+    const [loading, setLoading] = useState(false)
+
     const [available, setAvailable] = useState([true, true, true, true]);
     const [taken, setTaken] = useState([0, 0, 0, 0])
 
@@ -49,11 +51,11 @@ export default function App(){
   
 
     const onSubmit = (data) => {  
-        console.log(data)
+        setLoading("Creating your Account");
         unsubscribe();  
         createUserWithEmailAndPassword(auth, data.email, data.password)
         .then((userCredentials) => {
-            console.log("user created ", userCredentials.user)
+            setLoading("Saving Your Information");
             setDoc(
                 doc(db, "users/" + userCredentials.user.uid),
                 {
@@ -70,8 +72,8 @@ export default function App(){
                     votedFor: null
                 }
             ).then(() => {
-                console.log("user data saved", data)
-                setDoc(
+                setLoading("Ordering your Room")
+                setDoc( 
                     doc(db, "config/capacity"),
                 {
                     single: (data.roomType === 1) ? (taken[0]+1) : taken[0],
@@ -81,7 +83,7 @@ export default function App(){
                 },
                 { merge: true }
                 ).finally(() => {
-                    console.log("updated numbers")
+                    
                     toastifySuccess();
                     signOut(auth);
                 })
@@ -103,6 +105,11 @@ export default function App(){
 
     return (
         <div className="container-fluid bg-image" id="back">
+            {loading && (<div style={{"backgroundColor": "rgba(0, 0, 0, 0.7)",position: "absolute", zIndex : "999999",top: "0",left: "0",width: "100%",height: "100%"}}><div className="d-flex justify-content-center align-items-center flex-column" style={{ position:"absolute", top: "50%", left: "50%",marginRight: "-50%",transform: "translate(-50%, -50%)"  }} >
+                <div className="spinner-border text-light" style={{ width:"5rem", height:"5rem" }} role="status">
+                </div>
+                <p className='text-light mt-2'>{loading}...</p>
+            </div></div> )}
         <ToastContainer />
         <div className="row align-items-center" id="main">
             <FormProvider {...methods}  > 

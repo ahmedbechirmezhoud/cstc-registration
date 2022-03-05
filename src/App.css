@@ -46,6 +46,10 @@
       margin: auto;
   }
 
+  #illus{
+    display: none;
+  }
+
   #sub{
       bottom: 0;
   }
