@@ -1,5 +1,4 @@
 import { useFormContext } from 'react-hook-form';
-import 'react-toastify/dist/ReactToastify.min.css';
 
 import logo from './assets/logo2.png';
 import fb from './assets/fb.png';
@@ -7,7 +6,7 @@ import { useState } from 'react';
 
 export default function   Register({ handleError, setToggle }) {
 
-  const { register, handleSubmit, getValues, setValue } = useFormContext(); 
+  const { register, handleSubmit, getValues, setValue, setFocus } = useFormContext(); 
   const [account, setAccount] = useState(false);
 
   return (<>
@@ -24,6 +23,7 @@ export default function   Register({ handleError, setToggle }) {
                       setAccount(true);
                       setValue("name", "");
                       setValue("phone", "")
+                      setFocus("name");
                       }, handleError)}>
                         <div className="form-group mt-4 ">
                           <label className="form-label go" htmlFor="Email">Email address</label>
@@ -71,6 +71,7 @@ export default function   Register({ handleError, setToggle }) {
                        </div>
                        <div className="d-grid gap-2 mt-5" id="sub">
                            <button type="submit" className="btn btn-dark go">Save</button>
+                           <button type="button" onClick={() => setAccount(false)} className="btn btn-light go">Back</button>
                         </div>
                      </form>}
                 </div>

@@ -1,5 +1,4 @@
 import { useFormContext } from 'react-hook-form';
-import 'react-toastify/dist/ReactToastify.min.css';
 
 import illustration  from './assets/illustration.svg'
 import logo from './assets/logo.png'
@@ -7,7 +6,7 @@ import logo from './assets/logo.png'
 import { useEffect, useState } from 'react';
 
 
-export default function Order({ handleError, onSubmit, available }) {
+export default function Order({ handleError, onSubmit, available, setToggle }) {
 
   const [ roomType, setRoomType ] = useState(null);
   const [roomMates, setRoomMates] = useState([]);
@@ -93,6 +92,7 @@ export default function Order({ handleError, onSubmit, available }) {
                 <p></p>
                 <div className="d-grid gap-2 mt-5" id="sub">
                     <button type="submit" disabled={isSubmitted} className="btn btn-dark go">Order Now</button>
+                    <button type="button" disabled={isSubmitted} onClick={() => setToggle(false)} className="btn btn-light go">Back</button>
                 </div>
             </form>        
         </div>

@@ -1,15 +1,12 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.min.js';
 
 import { useForm, FormProvider } from "react-hook-form";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.min.css';
 
 import { createUserWithEmailAndPassword, deleteUser, signOut } from "firebase/auth";
-import { setDoc, doc, onSnapshot } from "firebase/firestore";
+import { setDoc, doc, getDoc } from "firebase/firestore";
 import { auth, db } from "./configInit";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Register from './Register';
 import Order from './Order';
@@ -23,41 +20,33 @@ export default function App(){
     const [available, setAvailable] = useState([true, true, true, true]);
     const [taken, setTaken] = useState([0, 0, 0, 0])
 
-    const unsubscribe = onSnapshot(doc(db, "config/capacity"), querySnapshot => {
-        const availability = [ 
-            querySnapshot.data().singleCapacity ? querySnapshot.data().singleCapacity > querySnapshot.data().single : true,
-            querySnapshot.data().doubleCapacity ? querySnapshot.data().doubleCapacity > querySnapshot.data().double : true,
-            querySnapshot.data().tripleCapacity ? querySnapshot.data().tripleCapacity > querySnapshot.data().triple : true,
-            querySnapshot.data().quadrupleCapacity ? querySnapshot.data().quadrupleCapacity > querySnapshot.data().quadruple : true
-        ];
-        setAvailable(availability);
-        setTaken([ querySnapshot.data().single, querySnapshot.data().double, querySnapshot.data().triple, querySnapshot.data().quadruple ])
-        
-    } )
-
     const methods = useForm()
     const [toggle, setToggle] = useState(false);
+    
+    useEffect(() => {
+        toggle && getDoc(doc(db, "config/capacity")).then((doc) => {
+            const availability = [ 
+                doc.data()?.singleCapacity ? doc.data()?.singleCapacity > doc.data()?.single : true,
+                doc.data()?.doubleCapacity ? doc.data()?.doubleCapacity > doc.data()?.double : true,
+                doc.data()?.tripleCapacity ? doc.data()?.tripleCapacity > doc.data()?.triple : true,
+                doc.data()?.quadrupleCapacity ? doc.data()?.quadrupleCapacity > doc.data()?.quadruple : true
+            ];
+            setAvailable(availability);
+            setTaken([ doc.data()?.single, doc.data()?.double, doc.data()?.triple, doc.data()?.quadruple ])
+        })
+    }, [toggle])
+
+
   
-      const toastifySuccess = () => {
-          toast('Form sent!', {
-              position: 'bottom-right',
-              autoClose: 5000,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: false,
-              className: 'submit-feedback success',
-              toastId: 'notifyToast',
-          });
-      };
   
 
     const onSubmit = (data) => {  
-        document.body.style.overflow = "hidden";
         setLoading("Creating your Account");
-        unsubscribe();  
+        //unsubscribe();  
         createUserWithEmailAndPassword(auth, data.email, data.password)
         .then((userCredentials) => {
+            setLoading("sending the verification mail to "+data.email);
+            //sendEmailVerification(userCredentials.user);
             setLoading("Saving Your Information");
             setDoc(
                 doc(db, "users/" + userCredentials.user.uid),
@@ -81,12 +70,11 @@ export default function App(){
                 {
                     single: (data.roomType === 1) ? (taken[0]+1) : taken[0],
                     double: (data.roomType === 2) ? (taken[1]+1) : taken[1],
-                    trible: (data.roomType === 3) ? (taken[2]+1) : taken[2],
+                    triple: (data.roomType === 3) ? (taken[2]+1) : taken[2],
                     quadruple: (data.roomType === 4) ? (taken[3]+1) : taken[3]
                 },
                 { merge: true }
                 ).finally(() => {                 
-                    toastifySuccess();
                     signOut(auth).then(() => {
                         setDone(true);
                         setLoading(false);
@@ -110,17 +98,16 @@ export default function App(){
 
     return (
         <div className="container-fluid bg-image" id="back">
-            {loading && (<div style={{"backgroundColor": "rgba(0, 0, 0, 0.7)",position: "absolute", zIndex : "999999",top: "0",left: "0",width: "100%",height: "100%"}}><div className="d-flex justify-content-center align-items-center flex-column" style={{ position:"absolute", top: "50%", left: "50%",marginRight: "-50%",transform: "translate(-50%, -50%)"  }} >
+            {loading && (<div style={{"backgroundColor": "rgba(0, 0, 0, 0.7)",position: "fixed", zIndex : "999999",top: "0",left: "0",width: "100vw",height: "100vh"}}><div className="d-flex justify-content-center align-items-center flex-column" style={{ position:"absolute", top: "50%", left: "50%",marginRight: "-50%",transform: "translate(-50%, -50%)"  }} >
                 <div className="spinner-border text-light" style={{ width:"5rem", height:"5rem" }} role="status">
                 </div>
                 <p className='text-light mt-2'>{loading}...</p>
             </div></div> )}
-        <ToastContainer />
         <div className="row align-items-center" id="main">
             {done 
                 ? (<Done /> ) 
                 : (<FormProvider {...methods} > 
-                    {!toggle ? <Register handleError={onError} setToggle={setToggle} /> : <Order available={available} handleError={onError} onSubmit={onSubmit} />}
+                    {!toggle ? <Register handleError={onError} setToggle={setToggle} /> : <Order available={available} setToggle={setToggle} handleError={onError} onSubmit={onSubmit} />}
                   </FormProvider>)}
         </div>
         </div>
