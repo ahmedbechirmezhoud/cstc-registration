@@ -13,10 +13,12 @@ import { useState } from 'react';
 
 import Register from './Register';
 import Order from './Order';
+import Done from './Done';
 
 export default function App(){
 
     const [loading, setLoading] = useState(false)
+    const [done, setDone] = useState(false)
 
     const [available, setAvailable] = useState([true, true, true, true]);
     const [taken, setTaken] = useState([0, 0, 0, 0])
@@ -51,6 +53,7 @@ export default function App(){
   
 
     const onSubmit = (data) => {  
+        document.body.style.overflow = "hidden";
         setLoading("Creating your Account");
         unsubscribe();  
         createUserWithEmailAndPassword(auth, data.email, data.password)
@@ -82,10 +85,12 @@ export default function App(){
                     quadruple: (data.roomType === 4) ? (taken[3]+1) : taken[3]
                 },
                 { merge: true }
-                ).finally(() => {
-                    
+                ).finally(() => {                 
                     toastifySuccess();
-                    signOut(auth);
+                    signOut(auth).then(() => {
+                        setDone(true);
+                        setLoading(false);
+                    })
                 })
             }).catch((e) => {
                 onError(e);
@@ -112,9 +117,11 @@ export default function App(){
             </div></div> )}
         <ToastContainer />
         <div className="row align-items-center" id="main">
-            <FormProvider {...methods}  > 
-                {!toggle ? <Register handleError={onError} setToggle={setToggle} /> : <Order available={available} handleError={onError} onSubmit={onSubmit} />}
-            </FormProvider>
+            {done 
+                ? (<Done /> ) 
+                : (<FormProvider {...methods} > 
+                    {!toggle ? <Register handleError={onError} setToggle={setToggle} /> : <Order available={available} handleError={onError} onSubmit={onSubmit} />}
+                  </FormProvider>)}
         </div>
         </div>
     )
