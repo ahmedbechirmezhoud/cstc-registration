@@ -7,7 +7,7 @@ import { useState } from 'react';
 
 export default function   Register({ handleError, setToggle }) {
 
-  const { register, handleSubmit, getValues } = useFormContext(); 
+  const { register, handleSubmit, getValues, setValue } = useFormContext(); 
   const [account, setAccount] = useState(false);
 
   return (<>
@@ -20,7 +20,11 @@ export default function   Register({ handleError, setToggle }) {
                     <h3 className="mb-4 ">Welcome!</h3>
                     <h2 className="card-title mb-4 font-weight-bold go">Register to CSTC 2.0</h2>
                     <p className="">This account will be advantageous throughout our congress.</p>
-                    {!account ? (<form onSubmit={handleSubmit(() => setAccount(true), handleError)}>
+                    {!account ? (<form onSubmit={handleSubmit(() => {
+                      setAccount(true);
+                      setValue("name", "");
+                      setValue("phone", "")
+                      }, handleError)}>
                         <div className="form-group mt-4 ">
                           <label className="form-label go" htmlFor="Email">Email address</label>
                           <input type="email"   

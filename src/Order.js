@@ -12,8 +12,8 @@ export default function Order({ handleError, onSubmit, available }) {
   const [ roomType, setRoomType ] = useState(null);
   const [roomMates, setRoomMates] = useState([]);
   const [ payementMethod, setPayementMethod ] = useState(null); 
-  const { handleSubmit, setValue, getValues, formState } = useFormContext(); 
-
+  const { handleSubmit, setValue, getValues } = useFormContext(); 
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
     let rows= [];
@@ -36,7 +36,7 @@ export default function Order({ handleError, onSubmit, available }) {
         <div className="card p-4 mb-2" id="cc">
             <img className="img-fluid " src={logo} alt="" width={166} height={151} />
             <h2 className="card-title font-weight-bold ">Payment Information</h2>        
-            <form className='card p-5' onSubmit={handleSubmit(onSubmit, handleError)}>
+            <form className='card p-5' onSubmit={handleSubmit((data) => {setIsSubmitted(true);onSubmit(data);}, handleError)}>
                 <h5 >Congress Fees</h5>
                 <div className="form-check">
                     <label className="form-check-label font-weight-bold mb-1"  style={{ fontSize : "17px" }} htmlFor="four">
@@ -92,7 +92,7 @@ export default function Order({ handleError, onSubmit, available }) {
                 <p><span style={{ fontWeight: "500" }}>Name:</span > Adam Dey <br/> <span style={{ fontWeight: "500" }}>phone:</span > 58881714 </p>
                 <p></p>
                 <div className="d-grid gap-2 mt-5" id="sub">
-                    <button type="submit" disabled={formState.isSubmitted} className="btn btn-dark go">Order Now</button>
+                    <button type="submit" disabled={isSubmitted} className="btn btn-dark go">Order Now</button>
                 </div>
             </form>        
         </div>
