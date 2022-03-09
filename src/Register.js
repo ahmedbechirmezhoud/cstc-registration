@@ -18,11 +18,12 @@ export default function   Register({ handleError, setToggle }) {
                 <div className="card p-4 mb-2" id="cc">
                     <h3 className="mb-4 ">Welcome!</h3>
                     <h2 className="card-title mb-4 font-weight-bold go">Register to CSTC 2.0</h2>
-                    <p className="">This account will be advantageous throughout our congress.</p>
+                    <p className="">This account will be advantageous throughout our congress through our mobile app (realtime updates, voting...)  </p>
                     {!account ? (<form onSubmit={handleSubmit(() => {
                       setAccount(true);
                       setValue("name", "");
-                      setValue("phone", "")
+                      setValue("phone", "");
+                      setValue("cin", "");
                       setFocus("name");
                       }, handleError)}>
                         <div className="form-group mt-4 ">
@@ -58,8 +59,12 @@ export default function   Register({ handleError, setToggle }) {
                          <input type="text" className="form-control" {...register('phone', { required: true, valueAsNumber: true, minLength: 8, maxLength: 8 })} placeholder="99 999 999" />
                        </div>
                        <div className="form-group">
+                         <label className="form-label mt-4 go">CIN</label>
+                         <input type="text" className="form-control" {...register('cin', { required: true, minLength: 8, maxLength: 8 })} placeholder="Enter your CIN" />
+                       </div> 
+                       <div className="form-group">
                          <label className="form-label mt-4 go">Birthday Date</label>
-                         <input type="date" className="form-control" {...register('birthday', { required: true, valueAsDate:true })}  />
+                         <input type="date" className="form-control" {...register('birthday', { required: true, valueAsDate:true, validate : value => (new Date(value).getFullYear()) < 2004 })}  />
                        </div>
                        <div className="form-group">
                          <label className="form-label mt-4 go">Address</label>

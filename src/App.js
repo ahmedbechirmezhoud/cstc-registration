@@ -12,92 +12,92 @@ import Register from './Register';
 import Order from './Order';
 import Done from './Done';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 export default function App(){
 
-    const [loading, setLoading] = useState(false)
-    const [done, setDone] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [done, setDone] = useState(false);
 
     const [available, setAvailable] = useState([true, true, true, true]);
-    const [taken, setTaken] = useState([0, 0, 0, 0])
 
     const methods = useForm()
     const [toggle, setToggle] = useState(false);
     
     useEffect(() => {
-        toggle && getDoc(doc(db, "config/capacity")).then((doc) => {
-            const availability = [ 
-                doc.data()?.singleCapacity ? doc.data()?.singleCapacity > doc.data()?.single : true,
-                doc.data()?.doubleCapacity ? doc.data()?.doubleCapacity > doc.data()?.double : true,
-                doc.data()?.tripleCapacity ? doc.data()?.tripleCapacity > doc.data()?.triple : true,
-                doc.data()?.quadrupleCapacity ? doc.data()?.quadrupleCapacity > doc.data()?.quadruple : true
-            ];
+        toggle && getDoc(doc(db, "config/available")).then((doc) => {
+            const availability = [doc.data()?.single, doc.data()?.double, doc.data()?.triple, doc.data()?.quadruple]; 
             setAvailable(availability);
-            setTaken([ doc.data()?.single, doc.data()?.double, doc.data()?.triple, doc.data()?.quadruple ])
         })
     }, [toggle])
 
 
-  
-  
-
-    const onSubmit = (data) => {  
-        setLoading("Creating your Account");
-        //unsubscribe();  
-        createUserWithEmailAndPassword(auth, data.email, data.password)
-        .then((userCredentials) => {
-            setLoading("sending the verification mail to "+data.email);
-            //sendEmailVerification(userCredentials.user);
-            setLoading("Saving Your Information");
-            setDoc(
-                doc(db, "users/" + userCredentials.user.uid),
-                {
-                    name: data.name,
-                    phone: data.phone,
-                    birthday: data.birthday,
-                    address: data.address,
-                    university: data.university,
-                    roomType: data.roomType,
-                    roomMates: data.roomMates ? data.roomMates : null ,
-                    payementMethod: data.payementMethod,
-                    checkedIn: false,
-                    paidFee: false,    
-                    votedFor: null
-                }
-            ).then(() => {
-                setLoading("Ordering your Room")
-                setDoc( 
-                    doc(db, "config/capacity"),
-                {
-                    single: (data.roomType === 1) ? (taken[0]+1) : taken[0],
-                    double: (data.roomType === 2) ? (taken[1]+1) : taken[1],
-                    triple: (data.roomType === 3) ? (taken[2]+1) : taken[2],
-                    quadruple: (data.roomType === 4) ? (taken[3]+1) : taken[3]
-                },
-                { merge: true }
-                ).finally(() => {                 
+    const onSubmit = (data) => {
+        console.log(data)  
+        if(data.roomType === null || data.payementMethod === null){
+            onError(Error("Complete the order Fields"));
+        }else{
+            setLoading("Creating your Account");
+            //unsubscribe();  
+            createUserWithEmailAndPassword(auth, data.email, data.password)
+            .then((userCredentials) => {
+                setLoading("sending the verification mail to "+data.email);
+                //sendEmailVerification(userCredentials.user);
+                setLoading("Saving Your Information");
+                setDoc(
+                    doc(db, "users/" + userCredentials.user.uid),
+                    {
+                        name: data.name,
+                        phone: data.phone,
+                        birthday: data.birthday,
+                        address: data.address,
+                        university: data.university,
+                        roomType: data.roomType,
+                        cin: data.cin,
+                        roomMates: data.roomMates ? data.roomMates : null ,
+                        payementMethod: data.payementMethod,
+                        message: data.message
+                    }
+                ).then(() => {
+                    setLoading("Ordering your Room");
                     signOut(auth).then(() => {
                         setDone(true);
                         setLoading(false);
                     })
+                }).catch((e) => {
+                    onError(Error("Error While saving your Data"));
+                    deleteUser(auth.currentUser);
                 })
-            }).catch((e) => {
-                onError(e);
-                deleteUser(auth.currentUser);
             })
-        })
-        .catch((e) => {
-            onError(e)
-        })
+            .catch((e) => {
+                onError(Error("error While Creating your account"));
+            })
+        }
       
     }
   
-    const onError = (errors) => {
-      console.log(errors)
+    const onError = (error) => {
+      if(typeof(error) === Error)
+          toast.error(error.message);
+      else
+          toast.error("an Error has occurred! Try again.");
     }
   
 
     return (
         <div className="container-fluid bg-image" id="back">
+            <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+             />
             {loading && (<div style={{"backgroundColor": "rgba(0, 0, 0, 0.7)",position: "fixed", zIndex : "999999",top: "0",left: "0",width: "100vw",height: "100vh"}}><div className="d-flex justify-content-center align-items-center flex-column" style={{ position:"absolute", top: "50%", left: "50%",marginRight: "-50%",transform: "translate(-50%, -50%)"  }} >
                 <div className="spinner-border text-light" style={{ width:"5rem", height:"5rem" }} role="status">
                 </div>
