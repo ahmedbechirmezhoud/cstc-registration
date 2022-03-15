@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useForm, FormProvider } from "react-hook-form";
 
 import { createUserWithEmailAndPassword, deleteUser, signOut } from "firebase/auth";
-import { setDoc, doc, getDoc } from "firebase/firestore";
+import { setDoc, doc, getDoc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "./configInit";
 import { useEffect, useState } from 'react';
 
@@ -61,9 +61,19 @@ export default function App(){
                     }
                 ).then(() => {
                     setLoading("Ordering your Room");
-                    signOut(auth).then(() => {
-                        setDone(true);
-                        setLoading(false);
+                    setDoc(db, "userEmailPhoneNumbers/" + userCredentials.user.uid, {
+                        email : data.email,
+                        phone : data.phone
+                    }).then(() => {
+                        signOut(auth).then(() => {
+                            setDone(true);
+                            setLoading(false);
+                        })
+                    }).catch((e) => {
+                        console.log(e);
+                        onError(Error("Error While ordering your Room"));
+                        deleteUser(auth.currentUser);
+                        deleteDoc(doc(db,"users/" + userCredentials.user.uid)); 
                     })
                 }).catch((e) => {
                     onError(Error("Error While saving your Data"));
@@ -78,6 +88,7 @@ export default function App(){
     }
   
     const onError = (error) => {
+      console.log(error)
       if(typeof(error) === Error)
           toast.error(error.message);
       else
