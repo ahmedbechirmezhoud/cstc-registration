@@ -14,6 +14,7 @@ import Done from './Done';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import RegisterClosed from './RegisterClosed';
 
 export default function App(){
 
@@ -50,6 +51,7 @@ export default function App(){
                     {
                         name: data.name,
                         phone: data.phone,
+                        email: data.email,
                         birthday: data.birthday,
                         address: data.address,
                         university: data.university,
@@ -61,7 +63,7 @@ export default function App(){
                     }
                 ).then(() => {
                     setLoading("Ordering your Room");
-                    setDoc(db, "userEmailPhoneNumbers/" + userCredentials.user.uid, {
+                    setDoc(doc(db, "userEmailPhoneNumbers/" + userCredentials.user.uid), {
                         email : data.email,
                         phone : data.phone
                     }).then(() => {

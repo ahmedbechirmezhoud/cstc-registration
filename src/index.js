@@ -3,10 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import RegisterClosed from './RegisterClosed';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <RegisterClosed />
   </React.StrictMode>,
   document.getElementById('root')
 );
